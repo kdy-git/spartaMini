@@ -1,6 +1,7 @@
 package com.sparta.miniproject.model;
-import com.sparta.miniproject.dto.UserDto;
+
 import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity

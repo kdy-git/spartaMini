@@ -1,7 +1,6 @@
 package com.sparta.miniproject.controller;
 
 import com.sparta.miniproject.dto.UserDto;
-import com.sparta.miniproject.model.User;
 import com.sparta.miniproject.repository.UserRepository;
 import com.sparta.miniproject.service.UserService;
 import lombok.RequiredArgsConstructor;
