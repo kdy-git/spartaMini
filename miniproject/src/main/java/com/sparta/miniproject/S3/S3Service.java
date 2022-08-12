@@ -8,9 +8,9 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
-@Slf4j
 @Service
 @NoArgsConstructor
 public class S3Service {
@@ -43,11 +42,11 @@ public class S3Service {
                 .build();
     }
 
-    public String uploadObject(MultipartFile file) {
+    public String uploadImage(MultipartFile file) throws IllegalArgumentException, NullPointerException {
         String fileName = UUID.randomUUID() + "-" + Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
         try {
             if (!(fileName.endsWith(".bmp") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png"))) {
-                throw new IllegalArgumentException("bmp, jpg, jpeg, png 형식의 이미지 파일이 필요합니다.");
+                throw new IllegalArgumentException("bmp,jpg,jpeg,png 형식의 이미지 파일이 필요합니다..");
             }
             s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
@@ -58,7 +57,7 @@ public class S3Service {
     }
 
 
-    public void deleteObject(String sourceKey) {
+    public void deleteImage(String sourceKey) {
         s3Client.deleteObject(bucket, sourceKey);
     }
 }

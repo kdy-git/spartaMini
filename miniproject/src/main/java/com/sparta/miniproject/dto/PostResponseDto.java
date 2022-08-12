@@ -10,9 +10,8 @@ import java.time.LocalDateTime;
 @Getter
 public class PostResponseDto {
     private Long id;
-    private String username;
     private String contents;
-    private String imageUrl;
+    private String imgUrl;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime modifiedAt;
@@ -20,9 +19,8 @@ public class PostResponseDto {
     @Builder
     public PostResponseDto(Post post) {
         this.id = post.getId();
-        this.username = post.getUsername();
         this.contents = post.getContents();
-        this.imageUrl = post.getImgUrl();
+        this.imgUrl = post.getImgUrl();
         this.modifiedAt = post.getModifiedAt();
     }
 }
