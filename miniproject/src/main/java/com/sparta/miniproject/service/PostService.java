@@ -6,8 +6,6 @@ import com.sparta.miniproject.dto.PostResponseDto;
 import com.sparta.miniproject.model.Post;
 import com.sparta.miniproject.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,8 +45,18 @@ public class PostService {
 
     // 포스트 생성
     @Transactional
-    public Post createPost(PostRequestDto requestDto) {
-
+    public Post createPost(PostRequestDto requestDto, MultipartFile imageFile) {
+        String imagePath;
+        if (!Objects.isNull(imageFile)) {
+            try {
+                imagePath = s3Service.uploadImage(imageFile);
+                requestDto.setImgUrl(imagePath);
+            } catch (NullPointerException e) {
+                throw new NullPointerException("파일 변환에 실패했습니다");
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
+        }
         Post post = requestDto.createPost();
         return postRepository.save(post);
     }
@@ -69,14 +77,9 @@ public class PostService {
         post.update(requestDto.getContents(), requestDto.getImgUrl());
     }
 
-
     // 포스트 삭제
     public Long deletePost(Long id) {
         postRepository.deleteById(id);
         return id;
     }
-
-
-
-
 }
