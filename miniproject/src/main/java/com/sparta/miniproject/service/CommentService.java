@@ -2,7 +2,6 @@ package com.sparta.miniproject.service;
 
 
 import com.sparta.miniproject.dto.CommentRequestDto;
-import com.sparta.miniproject.dto.CommentResponseDto;
 import com.sparta.miniproject.model.Comment;
 import com.sparta.miniproject.model.Post;
 import com.sparta.miniproject.repository.CommentRepository;
@@ -11,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -20,32 +17,17 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
 
     // 댓글 조회
-    public List<CommentResponseDto> getComment(Long contentId) {
-        List<Comment> comments = commentRepository.findAllByOrderByCreatedAtDesc(contentId);
-        if(comments == null) {
-            throw new IllegalArgumentException("댓글이 없습니다.");
-        }
-        List<CommentResponseDto> commentList = new ArrayList<>();
-        for (Comment comment : comments) {
-            CommentResponseDto commentResponseDto = CommentResponseDto.builder()
-                    .comment(comment)
-                    .build();
-            commentList.add(commentResponseDto);
-        }
-        return commentList;
+    public List<Comment> getComment(Long postId) {
+        return commentRepository.findAllByOrderByCreatedAtDesc(postId);
     }
 
     // 댓글 생성
     @Transactional
-    public void createComment(HashMap data) {
-        String commentContent = (String) data.get("comment");
-
-        Comment comment = Comment.builder()
-                .commentContent(commentContent)
-                .build();
-        commentRepository.save(comment);
+    public void createComment(Long postId, CommentRequestDto requestDto) {
+        commentRepository.save(new Comment(postId, requestDto));
     }
 
     // 댓글 수정
@@ -53,7 +35,7 @@ public class CommentService {
     public void updateComment(Long commentId, CommentRequestDto requestDto) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
-        comment.update(requestDto.getCommentContent());
+        comment.update(requestDto);
     }
 
     // 댓글 삭제

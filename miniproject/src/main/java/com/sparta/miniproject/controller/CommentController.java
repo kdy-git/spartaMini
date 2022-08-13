@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-
 @RequiredArgsConstructor
 @RestController
 public class CommentController {
@@ -16,14 +14,15 @@ public class CommentController {
     private final CommentService commentService;
 
     // 댓글 생성
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/post/{postId}/comment")
-    public ResponseEntity<String> createComment(@RequestBody HashMap<String, Object> data) {
-        commentService.createComment(data);
+    public ResponseEntity<String> createComment(@PathVariable Long postId, @RequestBody CommentRequestDto requestDto) {
+        commentService.createComment(postId, requestDto);
         return new ResponseEntity<>("댓글이 등록되었습니다", HttpStatus.OK);
     }
 
     // 댓글 수정
-    @PatchMapping("/api/post/{postId}/{commentId}")
+    @PutMapping("/api/post/{postId}/{commentId}")
     public ResponseEntity<String> updateComment(@PathVariable Long commentId, CommentRequestDto requestDto) {
         commentService.updateComment(commentId, requestDto);
         return new ResponseEntity<>("댓글이 수정되었습니다", HttpStatus.OK);
