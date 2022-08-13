@@ -16,10 +16,10 @@ public class Comment extends Timestamped {
     @Id
     private Long commentId;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
     private Long postId;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
     private String commentContent;
 
     public Comment(Long postId, CommentRequestDto requestDto) {

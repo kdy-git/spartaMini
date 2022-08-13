@@ -9,8 +9,10 @@ import com.sparta.miniproject.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -32,7 +34,7 @@ public class CommentService {
 
     // 댓글 수정
     @Transactional
-    public void updateComment(Long commentId, CommentRequestDto requestDto) {
+    public void updateComment(Long postId, Long commentId, CommentRequestDto requestDto) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
         comment.update(requestDto);
