@@ -35,8 +35,8 @@ public class PostService {
     }
 
     // 포스트 상세 조회
-    public PostResponseDto getPost(Long id) {
-        Post post = postRepository.findById(id)
+    public PostResponseDto getPost(Long postId) {
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
         return PostResponseDto.builder()
                 .post(post)
@@ -63,8 +63,8 @@ public class PostService {
 
     //  포스트 수정
     @Transactional
-    public void updatePost(Long id, PostRequestDto requestDto, MultipartFile file) {
-        Post post = postRepository.findById(id)
+    public void updatePost(Long postId, PostRequestDto requestDto, MultipartFile file) {
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
         if(requestDto.getContents() == null || requestDto.getContents().equals("")){
             throw new NullPointerException("제목과 내용을 채워주세요.");
@@ -78,8 +78,8 @@ public class PostService {
     }
 
     // 포스트 삭제
-    public Long deletePost(Long id) {
-        postRepository.deleteById(id);
-        return id;
+    public Long deletePost(Long postId) {
+        postRepository.deleteById(postId);
+        return postId;
     }
 }

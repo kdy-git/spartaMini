@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class PostResponseDto {
-    private Long id;
+    private Long postId;
     private String contents;
     private String imgUrl;
 
@@ -18,7 +18,7 @@ public class PostResponseDto {
 
     @Builder
     public PostResponseDto(Post post) {
-        this.id = post.getId();
+        this.postId = post.getPostId();
         this.contents = post.getContents();
         this.imgUrl = post.getImgUrl();
         this.modifiedAt = post.getModifiedAt();

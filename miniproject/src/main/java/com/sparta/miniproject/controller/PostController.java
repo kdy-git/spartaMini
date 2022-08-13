@@ -3,6 +3,7 @@ package com.sparta.miniproject.controller;
 
 import com.sparta.miniproject.dto.PostRequestDto;
 import com.sparta.miniproject.dto.PostResponseDto;
+import com.sparta.miniproject.service.CommentService;
 import com.sparta.miniproject.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
     // 포스트 리스트 조회
     @GetMapping("/api/posts")
@@ -28,10 +30,11 @@ public class PostController {
 
     // 포스트 상세 조회
     @ResponseBody
-    @GetMapping("/api/post/{id}")
-    public HashMap getPost(@PathVariable Long id) {
+    @GetMapping("/api/post/{postId}")
+    public HashMap getPost(@PathVariable Long postId) {
         HashMap p = new HashMap();
-        p.put("contents", postService.getPost(id));
+        p.put("contents", postService.getPost(postId));
+        p.put("comment", commentService.getComment(postId));
         return p;
     }
 
@@ -44,10 +47,10 @@ public class PostController {
     }
 
     // 포스트 수정
-    @PutMapping("/api/post/{id}")
-    public ResponseEntity<String> updatePost(@PathVariable Long id, PostRequestDto requestDto, MultipartFile imageFile) {
+    @PutMapping("/api/post/{postId}")
+    public ResponseEntity<String> updatePost(@PathVariable Long postId, PostRequestDto requestDto, MultipartFile imageFile) {
             try {
-                postService.updatePost(id, requestDto, imageFile);
+                postService.updatePost(postId, requestDto, imageFile);
             } catch (NullPointerException | IllegalArgumentException e) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
             }
@@ -55,8 +58,8 @@ public class PostController {
     }
 
     // 포스트 삭제
-    @DeleteMapping("/api/post/{id}")
-    public Long deletePost(@PathVariable Long id) {
-        return postService.deletePost(id);
+    @DeleteMapping("/api/post/{postId}")
+    public Long deletePost(@PathVariable Long postId) {
+        return postService.deletePost(postId);
     }
 }
