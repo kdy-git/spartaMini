@@ -1,12 +1,12 @@
 package com.sparta.miniproject.S3;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,8 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @NoArgsConstructor
@@ -56,8 +58,23 @@ public class S3Service {
         return s3Client.getUrl(bucket, fileName).toString();
     }
 
+    public List<DeleteObjectsRequest.KeyVersion> getImageKeys() {
+        ListObjectsV2Result result = s3Client.listObjectsV2(bucket);
+        List<S3ObjectSummary> objects = result.getObjectSummaries();
+        List<DeleteObjectsRequest.KeyVersion> imageNameList = new CopyOnWriteArrayList<>();
+        for (S3ObjectSummary os : objects) {
+            imageNameList.add(new DeleteObjectsRequest.KeyVersion(os.getKey()));
+        }
+        return imageNameList;
+    }
 
-    public void deleteImage(String sourceKey) {
-        s3Client.deleteObject(bucket, sourceKey);
+    public void deleteImages(List<DeleteObjectsRequest.KeyVersion> keys) {
+        DeleteObjectsRequest dor = new DeleteObjectsRequest(bucket)
+                .withKeys(keys);
+        try {
+            s3Client.deleteObjects(dor);
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+        }
     }
 }
