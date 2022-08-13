@@ -8,9 +8,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -68,9 +68,13 @@ public class S3Service {
         return imageNameList;
     }
 
-    public void deleteImages(List<DeleteObjectsRequest.KeyVersion> keys) {
+    public void deleteObject(String sourceKey) {
+        s3Client.deleteObject(bucket, sourceKey);
+    }
+
+    public void deleteObjects(List<DeleteObjectsRequest.KeyVersion> object_keys) {
         DeleteObjectsRequest dor = new DeleteObjectsRequest(bucket)
-                .withKeys(keys);
+                .withKeys(object_keys);
         try {
             s3Client.deleteObjects(dor);
         } catch (AmazonServiceException e) {
