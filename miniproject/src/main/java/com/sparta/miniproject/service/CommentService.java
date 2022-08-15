@@ -28,8 +28,8 @@ public class CommentService {
 
     // 댓글 생성
     @Transactional
-    public void createComment(Long postId, CommentRequestDto requestDto) {
-        commentRepository.save(new Comment(postId, requestDto));
+    public Comment createComment(Long postId, CommentRequestDto requestDto) {
+        return commentRepository.save(new Comment(postId, requestDto));
     }
 
     // 댓글 수정
