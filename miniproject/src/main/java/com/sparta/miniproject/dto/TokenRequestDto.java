@@ -4,12 +4,7 @@ import lombok.*;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class TokenDto {
-
-    private String grantType;
+public class TokenRequestDto {
     private String accessToken;
     private String refreshToken;
-    private Long accessTokenExpiresIn;
 }

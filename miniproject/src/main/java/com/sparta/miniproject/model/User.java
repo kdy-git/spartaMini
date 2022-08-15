@@ -3,32 +3,34 @@ package com.sparta.miniproject.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
-@Entity
-@Table(name = "users")
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "users")
+@Entity
 public class User {
-
     @Id
-    @Column
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false, length = 30, unique = true)
     private String username;
-
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column
-    private String email;
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
 
-    @Column
-    private boolean activated;
+    @Builder
+    public User(String username, String password, Authority authority) {
+        this.username = username;
+        this.password = password;
+        this.authority = authority;
+
+    }
 }

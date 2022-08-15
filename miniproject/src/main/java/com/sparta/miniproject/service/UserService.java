@@ -1,18 +1,10 @@
 package com.sparta.miniproject.service;
 
-import com.sparta.miniproject.dto.LoginDto;
-import com.sparta.miniproject.dto.TokenDto;
-import com.sparta.miniproject.dto.UserDto;
-import com.sparta.miniproject.exception.DuplicateMemberException;
-import com.sparta.miniproject.jwt.TokenProvider;
-import com.sparta.miniproject.model.User;
+
+import com.sparta.miniproject.dto.UserResponseDto;
 import com.sparta.miniproject.repository.UserRepository;
+import com.sparta.miniproject.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,39 +12,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final TokenProvider tokenProvider;
 
-    @Transactional
-    public UserDto signup(UserDto userDto) {
-        if (userRepository.findByUsername(userDto.getUsername()) != null) {
-            throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
-        }
-
-        User user = User.builder()
-                .username(userDto.getUsername())
-                .password(passwordEncoder.encode(userDto.getPassword()))
-                .email(userDto.getEmail())
-                .activated(true)
-                .build();
-
-        return UserDto.from(userRepository.save(user));
+    @Transactional(readOnly = true)
+    public UserResponseDto getMemberInfo(String username) {
+        return userRepository.findByUsername(username)
+                .map(UserResponseDto::of)
+                .orElseThrow(
+                        () -> new RuntimeException("유저 정보가 없습니다")
+                );
     }
 
+    //현재 SecurityContext에 있는 유저 정보 가져오기기
     @Transactional
-    public String login(LoginDto loginDto) {
-
-        UsernamePasswordAuthenticationToken authenticationToken = loginDto.toAuthentication();
-
-        System.out.println("로그인 검증");
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-        System.out.println("token 생성");
-        String jwtToken = tokenProvider.createToken(authentication);
-
-        return "Bearer " + jwtToken;
-
-
+    public UserResponseDto getMyInfo() {
+        return userRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(UserResponseDto::of)
+                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
     }
 }
