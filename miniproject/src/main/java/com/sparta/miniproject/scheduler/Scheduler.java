@@ -20,7 +20,7 @@ public class Scheduler {
     private final PostRepository postRepository;
     private final S3Service s3Service;
 
-    @Scheduled(cron = "10 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void deleteOrphanImage() {
         log.info("스케쥴러 시작");
         List<String> dbImgList = postRepository.findAllBy(ImgUrlMapping.class)
