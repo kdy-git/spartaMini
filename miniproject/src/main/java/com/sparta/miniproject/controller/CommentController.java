@@ -18,7 +18,6 @@ public class CommentController {
     @PostMapping("/api/post/{postId}/comment")
     public Comment createComment(@PathVariable Long postId, @RequestBody CommentRequestDto requestDto) {
         return commentService.createComment(postId, requestDto);
-
     }
 
     // 댓글 수정
