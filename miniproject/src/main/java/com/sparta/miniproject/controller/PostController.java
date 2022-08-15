@@ -7,8 +7,6 @@ import com.sparta.miniproject.model.Post;
 import com.sparta.miniproject.service.CommentService;
 import com.sparta.miniproject.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +23,7 @@ public class PostController {
 
     // 포스트 리스트 조회
     @GetMapping("/api/posts")
-    public List<PostResponseDto> getpostList() {
+    public List<PostResponseDto> getPostList() {
         return postService.getPostList();
     }
 
@@ -41,7 +39,7 @@ public class PostController {
 
     // 포스트 생성
     @PostMapping("/api/post")
-    public Post createPosts(PostRequestDto requestDto, List<MultipartFile> imageFile) {
+    public Post createPost(PostRequestDto requestDto, List<MultipartFile> imageFile) {
         return postService.createPost(requestDto, imageFile);
     }
 

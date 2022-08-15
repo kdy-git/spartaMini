@@ -16,7 +16,6 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
 
     // 댓글 조회
     public List<Comment> getComment(Long postId) {
