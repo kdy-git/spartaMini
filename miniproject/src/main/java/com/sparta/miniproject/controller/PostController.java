@@ -47,13 +47,8 @@ public class PostController {
 
     // 포스트 수정
     @PutMapping("/api/post/{postId}")
-    public ResponseEntity<String> updatePost(@PathVariable Long postId, PostRequestDto requestDto, List<MultipartFile> imageFile) {
-            try {
-                postService.updatePost(postId, requestDto, imageFile);
-            } catch (NullPointerException | IllegalArgumentException e) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
-            }
-        return new ResponseEntity<>("컨텐츠 수정에 성공했습니다.", HttpStatus.OK);
+    public Post updatePost(@PathVariable Long postId, PostRequestDto requestDto, List<MultipartFile> imageFile) {
+        return postService.updatePost(postId, requestDto, imageFile);
     }
 
     // 포스트 삭제
