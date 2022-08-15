@@ -58,7 +58,8 @@ public class S3Service {
             } catch (IOException e) {
                 throw new RuntimeException("S3 파일 업로드가 실패하였습니다.");
             }
-            fileNameList.add(fileName);
+            String fileNameUrl = s3Client.getUrl(bucket, fileName).toString();
+            fileNameList.add(fileNameUrl);
         });
         return fileNameList;
     }
