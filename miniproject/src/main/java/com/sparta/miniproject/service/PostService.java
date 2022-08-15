@@ -4,6 +4,7 @@ import com.sparta.miniproject.S3.S3Service;
 import com.sparta.miniproject.dto.PostRequestDto;
 import com.sparta.miniproject.dto.PostResponseDto;
 import com.sparta.miniproject.model.Post;
+import com.sparta.miniproject.repository.CommentRepository;
 import com.sparta.miniproject.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.Objects;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final S3Service s3Service;
 
     // 포스트 리스트 조회
@@ -26,8 +28,10 @@ public class PostService {
         List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         List<PostResponseDto> postList = new ArrayList<>();
         for (Post post : posts) {
+            int countComment = commentRepository.countByPostId(post.getPostId());
             PostResponseDto postResponseDto = PostResponseDto.builder()
                     .post(post)
+                    .countComment(countComment)
                     .build();
             postList.add(postResponseDto);
         }
@@ -38,8 +42,10 @@ public class PostService {
     public PostResponseDto getPost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
+        int countComment = commentRepository.countByPostId(post.getPostId());
         return PostResponseDto.builder()
                 .post(post)
+                .countComment(countComment)
                 .build();
     }
 

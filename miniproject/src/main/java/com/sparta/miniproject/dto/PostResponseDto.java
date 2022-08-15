@@ -16,11 +16,14 @@ public class PostResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime modifiedAt;
 
+    private int countComment;
+
     @Builder
-    public PostResponseDto(Post post) {
+    public PostResponseDto(Post post, int countComment) {
         this.postId = post.getPostId();
         this.contents = post.getContents();
         this.imgUrl = post.getImgUrl();
         this.modifiedAt = post.getModifiedAt();
+        this.countComment = countComment;
     }
 }
