@@ -45,12 +45,12 @@ public class PostService {
 
     // 포스트 생성
     @Transactional
-    public Post createPost(PostRequestDto requestDto, MultipartFile imageFile) {
-        String imagePath;
+    public Post createPost(PostRequestDto requestDto, List<MultipartFile> imageFile) {
+        List<String> imagePathList;
         if (!Objects.isNull(imageFile)) {
             try {
-                imagePath = s3Service.uploadImage(imageFile);
-                requestDto.setImgUrl(imagePath);
+                imagePathList = s3Service.uploadImage(imageFile);
+                requestDto.setImgUrl(String.valueOf(imagePathList));
             } catch (NullPointerException e) {
                 throw new NullPointerException("파일 변환에 실패했습니다");
             } catch (IllegalArgumentException e) {
@@ -63,18 +63,19 @@ public class PostService {
 
     //  포스트 수정
     @Transactional
-    public void updatePost(Long postId, PostRequestDto requestDto, MultipartFile file) {
+    public Post updatePost(Long postId, PostRequestDto requestDto, List<MultipartFile> imageFile) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
         if(requestDto.getContents() == null || requestDto.getContents().equals("")){
             throw new NullPointerException("제목과 내용을 채워주세요.");
         }
-        String imagePath;
-        if (!Objects.isNull(file)) {
-            imagePath = s3Service.uploadImage(file);
-            requestDto.setImgUrl(imagePath);
+        List<String> imagePathList;
+        if (!Objects.isNull(imageFile)) {
+            imagePathList = s3Service.uploadImage(imageFile);
+            requestDto.setImgUrl(String.valueOf((imagePathList)));
         }
         post.update(requestDto.getContents(), requestDto.getImgUrl());
+        return post;
     }
 
     // 포스트 삭제

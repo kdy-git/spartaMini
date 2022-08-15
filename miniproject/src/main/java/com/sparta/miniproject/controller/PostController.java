@@ -3,6 +3,7 @@ package com.sparta.miniproject.controller;
 
 import com.sparta.miniproject.dto.PostRequestDto;
 import com.sparta.miniproject.dto.PostResponseDto;
+import com.sparta.miniproject.model.Post;
 import com.sparta.miniproject.service.CommentService;
 import com.sparta.miniproject.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -40,15 +41,13 @@ public class PostController {
 
     // 포스트 생성
     @PostMapping("/api/post")
-    public ResponseEntity<String> createPosts(PostRequestDto requestDto, MultipartFile imageFile) {
-
-        postService.createPost(requestDto, imageFile);
-        return new ResponseEntity<>("컨텐츠 등록에 성공했습니다", HttpStatus.OK);
+    public Post createPosts(PostRequestDto requestDto, List<MultipartFile> imageFile) {
+        return postService.createPost(requestDto, imageFile);
     }
 
     // 포스트 수정
     @PutMapping("/api/post/{postId}")
-    public ResponseEntity<String> updatePost(@PathVariable Long postId, PostRequestDto requestDto, MultipartFile imageFile) {
+    public ResponseEntity<String> updatePost(@PathVariable Long postId, PostRequestDto requestDto, List<MultipartFile> imageFile) {
             try {
                 postService.updatePost(postId, requestDto, imageFile);
             } catch (NullPointerException | IllegalArgumentException e) {
