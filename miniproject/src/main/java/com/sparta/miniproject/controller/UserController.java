@@ -22,7 +22,7 @@ public class UserController {
 
     @GetMapping("/myPage/{username}")
     public List<Post> myPage(@PathVariable String username) {
-        List<Post> DB_List = postRepository.findAllByUsername(username);
+        List<Post> DB_List = postRepository.findAllByAuthor(username);
         List<Post> list = new ArrayList<>();
 
         if(DB_List.size() > 3) {

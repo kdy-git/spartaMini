@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class PostResponseDto {
     private Long postId;
+    private String author;
     private String contents;
     private String imgUrl;
 
@@ -21,6 +22,7 @@ public class PostResponseDto {
     @Builder
     public PostResponseDto(Post post, int countComment) {
         this.postId = post.getPostId();
+        this.author = post.getAuthor();
         this.contents = post.getContents();
         this.imgUrl = post.getImgUrl();
         this.modifiedAt = post.getModifiedAt();
