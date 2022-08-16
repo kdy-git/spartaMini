@@ -45,23 +45,18 @@ public class S3Service {
                 .build();
     }
 
-    public List<String> uploadImage(List<MultipartFile> imageFile) throws IllegalArgumentException, NullPointerException {
-        List<String> fileNameList = new ArrayList<>();
-        imageFile.forEach(file -> {
-            String fileName = UUID.randomUUID() + "-" + Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
+    public String uploadImage(MultipartFile imageFile) throws IllegalArgumentException, NullPointerException {
+            String fileName = UUID.randomUUID() + "-" + Objects.requireNonNull(imageFile.getOriginalFilename()).toLowerCase();
             try {
                 if (!(fileName.endsWith(".bmp") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png"))) {
                     throw new IllegalArgumentException("bmp,jpg,jpeg,png 형식의 이미지 파일이 필요합니다..");
                 }
-                s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null)
+                s3Client.putObject(new PutObjectRequest(bucket, fileName, imageFile.getInputStream(), null)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
             } catch (IOException e) {
                 throw new RuntimeException("S3 파일 업로드가 실패하였습니다.");
             }
-            String fileNameUrl = s3Client.getUrl(bucket, fileName).toString();
-            fileNameList.add(fileNameUrl);
-        });
-        return fileNameList;
+            return s3Client.getUrl(bucket, fileName).toString();
     }
 
     public List<DeleteObjectsRequest.KeyVersion> getImageKeys() {

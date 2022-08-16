@@ -39,13 +39,13 @@ public class PostController {
 
     // 포스트 생성
     @PostMapping("/api/post")
-    public Post createPost(PostRequestDto requestDto, List<MultipartFile> imageFile) {
+    public Post createPost(PostRequestDto requestDto, MultipartFile imageFile) {
         return postService.createPost(requestDto, imageFile);
     }
 
     // 포스트 수정
     @PutMapping("/api/post/{postId}")
-    public Post updatePost(@PathVariable Long postId, PostRequestDto requestDto, List<MultipartFile> imageFile) {
+    public Post updatePost(@PathVariable Long postId, PostRequestDto requestDto, MultipartFile imageFile) {
         return postService.updatePost(postId, requestDto, imageFile);
     }
 
