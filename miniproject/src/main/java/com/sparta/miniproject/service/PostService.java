@@ -4,6 +4,7 @@ import com.sparta.miniproject.S3.S3Service;
 import com.sparta.miniproject.dto.PostRequestDto;
 import com.sparta.miniproject.dto.PostResponseDto;
 import com.sparta.miniproject.model.Post;
+import com.sparta.miniproject.model.User;
 import com.sparta.miniproject.repository.CommentRepository;
 import com.sparta.miniproject.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final UserService userService;
     private final S3Service s3Service;
 
     // 포스트 리스트 조회
@@ -49,9 +51,14 @@ public class PostService {
                 .build();
     }
 
+    private String getUser() {
+        return userService.getMyInfo().getUsername();
+    }
+
     // 포스트 생성
     @Transactional
     public Post createPost(PostRequestDto requestDto, MultipartFile imageFile) {
+        requestDto.setAuthor(getUser());
         String imagePath;
         if (!Objects.isNull(imageFile)) {
             try {
@@ -69,9 +76,12 @@ public class PostService {
 
     //  포스트 수정
     @Transactional
-    public Post updatePost(Long postId, PostRequestDto requestDto, MultipartFile imageFile) {
+    public Post updatePost(Long postId, PostRequestDto requestDto, MultipartFile imageFile) throws IllegalArgumentException, NullPointerException {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
+        if(!getUser().equals(post.getAuthor())) {
+            throw new IllegalArgumentException("작성자가 아닙니다.");
+        }
         if(requestDto.getContents() == null || requestDto.getContents().equals("")){
             throw new NullPointerException("제목과 내용을 채워주세요.");
         }
@@ -85,7 +95,12 @@ public class PostService {
     }
 
     // 포스트 삭제
-    public Long deletePost(Long postId) {
+    public Long deletePost(Long postId) throws IllegalArgumentException {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
+        if(!getUser().equals(post.getAuthor())) {
+            throw new IllegalArgumentException("작성자가 아닙니다.");
+        }
         postRepository.deleteById(postId);
         return postId;
     }
