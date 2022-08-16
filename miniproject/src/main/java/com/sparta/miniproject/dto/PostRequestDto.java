@@ -10,13 +10,16 @@ import lombok.ToString;
 @ToString
 public class PostRequestDto {
 
+    private String author;
     private String contents;
     private String imgUrl;
 
     public Post createPost() {
         return Post.builder()
+                .author(author)
                 .contents(contents)
                 .imgUrl(imgUrl)
                 .build();
     }
+
 }
