@@ -63,6 +63,7 @@ public class PostService {
                 throw new IllegalArgumentException(e.getMessage());
             }
         }
+        requestDto.setUsername("test");
         Post post = requestDto.createPost();
         return postRepository.save(post);
     }
