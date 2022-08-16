@@ -19,20 +19,28 @@ import java.util.List;
 public class UserController {
 
     private final PostRepository postRepository;
+    private final UserService userService;
 
     @GetMapping("/myPage/{username}")
     public List<Post> myPage(@PathVariable String username) {
-        List<Post> DB_List = postRepository.findAllByAuthor(username);
-        List<Post> list = new ArrayList<>();
 
-        if(DB_List.size() > 3) {
-            list.add(DB_List.get(DB_List.size()-1));
-            list.add(DB_List.get(DB_List.size()-2));
-            list.add(DB_List.get(DB_List.size()-3));
+        if(username.equals(userService.getMyInfo().getUsername())) {
+            List<Post> DB_List = postRepository.findAllByAuthor(username);
+            List<Post> list = new ArrayList<>();
 
-            return list;
+            if(DB_List.size() > 3) {
+                list.add(DB_List.get(DB_List.size()-1));
+                list.add(DB_List.get(DB_List.size()-2));
+                list.add(DB_List.get(DB_List.size()-3));
+
+                return list;
+            }
+            return DB_List;
+        }else {
+            return null;
         }
-        return DB_List;
+
+
     }
 
 

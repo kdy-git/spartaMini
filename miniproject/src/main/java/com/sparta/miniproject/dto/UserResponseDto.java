@@ -13,7 +13,6 @@ import lombok.Setter;
 public class UserResponseDto {
     private String username;
 
-
     public static UserResponseDto of(User user) {
         return new UserResponseDto(user.getUsername());
     }

@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final CorsFilter corsFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -57,6 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // 로그인, 회원가입 API 는 토큰이 없는 상태에서 요청이 들어오기 때문에 permitAll 설정
                 .and()
+                .addFilter(corsFilter)
                 .authorizeRequests()
                 .antMatchers("/api/post/**").authenticated()
                 .antMatchers("/api/myPage/**").authenticated()
