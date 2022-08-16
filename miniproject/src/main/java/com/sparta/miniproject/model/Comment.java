@@ -5,10 +5,7 @@ import com.sparta.miniproject.dto.CommentRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor
@@ -19,14 +16,18 @@ public class Comment extends Timestamped {
     @Id
     private Long commentId;
 
-    // @Column(nullable = false)
+    @Column(nullable = false)
     private Long postId;
 
-    // @Column(nullable = false)
+    @Column(nullable = false)
+    private String author;
+
+    @Column(nullable = false)
     private String commentContent;
 
     public Comment(Long postId, CommentRequestDto requestDto) {
         this.postId = postId;
+        this.author = requestDto.getAuthor();
         this.commentContent = requestDto.getCommentContent();
     }
 

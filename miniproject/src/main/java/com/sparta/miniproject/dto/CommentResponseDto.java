@@ -12,6 +12,8 @@ public class CommentResponseDto {
 
     private Long commentId;
 
+    private String author;
+
     private String commentContent;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -20,6 +22,7 @@ public class CommentResponseDto {
     @Builder
     public CommentResponseDto(Comment comment) {
         this.commentId = comment.getCommentId();
+        this.author = comment.getAuthor();
         this.commentContent = comment.getCommentContent();
         this.modifiedAt = comment.getModifiedAt();
     }
