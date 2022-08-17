@@ -49,13 +49,14 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public void deleteComment(Long commentId) {
+    public Long deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
         if(!getUser().equals(comment.getAuthor())) {
             throw new BusinessException(ErrorCode.COMMENT_UNAUTHORIZED);
         }
         commentRepository.deleteById(commentId);
+        return commentId;
     }
 }
 
