@@ -3,6 +3,8 @@ package com.sparta.miniproject.service;
 import com.sparta.miniproject.S3.S3Service;
 import com.sparta.miniproject.dto.PostRequestDto;
 import com.sparta.miniproject.dto.PostResponseDto;
+import com.sparta.miniproject.exception.BusinessException;
+import com.sparta.miniproject.exception.ErrorCode;
 import com.sparta.miniproject.model.Post;
 import com.sparta.miniproject.model.User;
 import com.sparta.miniproject.repository.CommentRepository;
@@ -76,14 +78,14 @@ public class PostService {
 
     //  포스트 수정
     @Transactional
-    public Post updatePost(Long postId, PostRequestDto requestDto, MultipartFile imageFile) throws IllegalArgumentException, NullPointerException {
+    public Post updatePost(Long postId, PostRequestDto requestDto, MultipartFile imageFile) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         if(!getUser().equals(post.getAuthor())) {
-            throw new IllegalArgumentException("작성자가 아닙니다.");
+            throw new BusinessException(ErrorCode.POST_UNAUTHORIZED);
         }
         if(requestDto.getContents() == null || requestDto.getContents().equals("")){
-            throw new NullPointerException("제목과 내용을 채워주세요.");
+            throw new BusinessException(ErrorCode.LENGTH_REQUIRED);
         }
         String imagePath;
         if (!Objects.isNull(imageFile)) {
@@ -97,9 +99,9 @@ public class PostService {
     // 포스트 삭제
     public Long deletePost(Long postId) throws IllegalArgumentException {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         if(!getUser().equals(post.getAuthor())) {
-            throw new IllegalArgumentException("작성자가 아닙니다.");
+            throw new BusinessException(ErrorCode.POST_UNAUTHORIZED);
         }
         postRepository.deleteById(postId);
         return postId;

@@ -2,6 +2,8 @@ package com.sparta.miniproject.service;
 
 
 import com.sparta.miniproject.dto.CommentRequestDto;
+import com.sparta.miniproject.exception.BusinessException;
+import com.sparta.miniproject.exception.ErrorCode;
 import com.sparta.miniproject.model.Comment;
 import com.sparta.miniproject.repository.CommentRepository;
 import com.sparta.miniproject.repository.PostRepository;
@@ -38,9 +40,9 @@ public class CommentService {
     @Transactional
     public Comment updateComment(Long postId, Long commentId, CommentRequestDto requestDto) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
         if(!getUser().equals(comment.getAuthor())) {
-            throw new IllegalArgumentException("작성자가 아닙니다.");
+            throw new BusinessException(ErrorCode.COMMENT_UNAUTHORIZED);
         }
         comment.update(requestDto);
         return comment;
@@ -49,9 +51,9 @@ public class CommentService {
     // 댓글 삭제
     public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
         if(!getUser().equals(comment.getAuthor())) {
-            throw new IllegalArgumentException("작성자가 아닙니다.");
+            throw new BusinessException(ErrorCode.COMMENT_UNAUTHORIZED);
         }
         commentRepository.deleteById(commentId);
     }
