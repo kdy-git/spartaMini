@@ -11,10 +11,7 @@ import com.sparta.miniproject.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -25,12 +22,12 @@ public class AuthController {
     private final AuthService authService;
     private final UserRepository userRepository;
 
-        @PostMapping("/register")
+
+    @PostMapping("/register")
     public ResponseEntity<UserResponseDto> register(@Valid @RequestBody UserRequestDto userRequestDto) {
         try {
             return ResponseEntity.ok(authService.signup(userRequestDto));
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             RestApiException restApiException = new RestApiException();
             restApiException.setHttpStatus(HttpStatus.CONFLICT);
             restApiException.setErrorMessage(ex.getMessage());
@@ -40,7 +37,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody UserRequestDto userRequestDto) {
-            return ResponseEntity.ok(authService.login(userRequestDto));
+        return ResponseEntity.ok(authService.login(userRequestDto));
     }
 
     @PostMapping("/reissue")
@@ -51,5 +48,10 @@ public class AuthController {
     @PostMapping("/idCheck")
     public boolean idCheck(@RequestBody UserRequestDto userRequestDto) {
         return userRepository.existsByUsername(userRequestDto.getUsername());
+    }
+
+    @GetMapping("/logout")
+    public void logOut() {
+        authService.logOut();
     }
 }

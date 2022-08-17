@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.validation.Valid;
 import java.util.Objects;
 
@@ -24,10 +25,11 @@ import java.util.Objects;
 public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-
+//    private final TokenRequestDto tokenRequestDto;
 
 
     @Transactional
@@ -82,11 +84,10 @@ public class AuthService {
         if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
             throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
         }
-
-        // 2. Access Token 에서 username 가져오기
+        // 2. Access Token 에서 user정보 가져오기위해 Access Token 정보 authentication 객체에 담기
         Authentication authentication = tokenProvider.getAuthentication(tokenRequestDto.getAccessToken());
 
-        // 3. 저장소에서 Member ID 를 기반으로 Refresh Token 값 가져옴
+        // 3. 저장소에서 authentication객체에 담겨있는 user Id 를 기반으로 Refresh Token 값 가져옴
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
 
@@ -94,7 +95,6 @@ public class AuthService {
         if (!refreshToken.getValue().equals(tokenRequestDto.getRefreshToken())) {
             throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
         }
-
         // 5. 새로운 토큰 생성
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
@@ -104,5 +104,13 @@ public class AuthService {
 
         // 토큰 발급
         return tokenDto;
+    }
+
+    @Transactional
+    public void logOut() {
+        String username = userService.getMyInfo().getUsername();
+        System.out.println(username);
+        String key = userRepository.findByUsername(username).get().getId().toString();
+        refreshTokenRepository.deleteByKey(key);
     }
 }
