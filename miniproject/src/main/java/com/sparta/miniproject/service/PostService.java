@@ -66,18 +66,14 @@ public class PostService {
             try {
                 imagePath = s3Service.uploadImage(imageFile);
                 requestDto.setImgUrl(imagePath);
-                Post post = requestDto.createPost();
-                return postRepository.save(post);
             } catch (NullPointerException e) {
                 throw new NullPointerException("파일 변환에 실패했습니다");
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException(e.getMessage());
-            } catch (Exception e) {
-                Post post = requestDto.createPost();
-                return postRepository.save(post);
             }
         }
-        return null;
+        Post post = requestDto.createPost();
+        return postRepository.save(post);
     }
 
     //  포스트 수정
@@ -85,10 +81,10 @@ public class PostService {
     public Post updatePost(Long postId, PostRequestDto requestDto, MultipartFile imageFile) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
-        if (!getUser().equals(post.getAuthor())) {
+        if(!getUser().equals(post.getAuthor())) {
             throw new BusinessException(ErrorCode.POST_UNAUTHORIZED);
         }
-        if (requestDto.getContents() == null || requestDto.getContents().equals("")) {
+        if(requestDto.getContents() == null || requestDto.getContents().equals("")){
             throw new BusinessException(ErrorCode.LENGTH_REQUIRED);
         }
         String imagePath;
@@ -104,7 +100,7 @@ public class PostService {
     public Long deletePost(Long postId) throws IllegalArgumentException {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
-        if (!getUser().equals(post.getAuthor())) {
+        if(!getUser().equals(post.getAuthor())) {
             throw new BusinessException(ErrorCode.POST_UNAUTHORIZED);
         }
         postRepository.deleteById(postId);
