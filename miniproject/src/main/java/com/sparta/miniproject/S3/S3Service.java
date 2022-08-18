@@ -71,10 +71,6 @@ public class S3Service {
         return imageNameList;
     }
 
-    public void deleteObject(String sourceKey) {
-        s3Client.deleteObject(bucket, sourceKey);
-    }
-
     public void deleteObjects(List<DeleteObjectsRequest.KeyVersion> object_keys) {
         DeleteObjectsRequest dor = new DeleteObjectsRequest(bucket)
                 .withKeys(object_keys);

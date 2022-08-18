@@ -4,6 +4,7 @@ import com.sparta.miniproject.model.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
@@ -12,4 +13,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllByOrderByCreatedAtDesc(Long postId);
 
     int countByPostId(Long PostId);
+
+    @Transactional
+    void deleteByPostId(Long PostId);
 }
