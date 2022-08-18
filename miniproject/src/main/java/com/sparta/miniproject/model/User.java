@@ -1,38 +1,36 @@
 package com.sparta.miniproject.model;
 
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
-@Entity
+@Getter
 @NoArgsConstructor
 @Table(name = "users")
+@Entity
 public class User {
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long userId;
+    @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30, unique = true)
     private String username;
-
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String email;
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
 
-    @Column
-    private String profileImageUrl;
-
-    public User(String username, String password, String email) {
+    @Builder
+    public User(String username, String password, Authority authority) {
         this.username = username;
         this.password = password;
-        this.email = email;
-    }
+        this.authority = authority;
 
-    public User(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
     }
-
 }

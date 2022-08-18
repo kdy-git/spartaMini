@@ -1,35 +1,47 @@
 package com.sparta.miniproject.controller;
 
-import com.sparta.miniproject.dto.UserDto;
-import com.sparta.miniproject.repository.UserRepository;
+import com.sparta.miniproject.dto.UserResponseDto;
+import com.sparta.miniproject.model.Post;
+import com.sparta.miniproject.repository.PostRepository;
 import com.sparta.miniproject.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
-@RequestMapping("/user")
+import java.util.ArrayList;
+import java.util.List;
+
+
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/api")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final PostRepository postRepository;
     private final UserService userService;
 
-    @PostMapping("/register")
-    private void register(@RequestBody UserDto userDto) {
-        userService.register(userDto);
+    @GetMapping("/myPage/{username}")
+    public List<Post> myPage(@PathVariable String username) {
+
+        if(username.equals(userService.getMyInfo().getUsername())) {
+            List<Post> DB_List = postRepository.findAllByAuthor(username);
+            List<Post> list = new ArrayList<>();
+
+            if(DB_List.size() > 3) {
+                list.add(DB_List.get(DB_List.size()-1));
+                list.add(DB_List.get(DB_List.size()-2));
+                list.add(DB_List.get(DB_List.size()-3));
+
+                return list;
+            }
+            return DB_List;
+        }else {
+            return null;
+        }
+
+
     }
 
-    @PostMapping("/idCheck")
-    public boolean idCheck(@RequestBody UserDto userDto) {
-        return userRepository.existsByUsername(userDto.getUsername());
-    }
-
-    @PostMapping("/emailCheck")
-    public boolean emailCheck(@RequestBody UserDto userDto) {
-        return userRepository.existsByEmail(userDto.getEmail());
-    }
 
 }

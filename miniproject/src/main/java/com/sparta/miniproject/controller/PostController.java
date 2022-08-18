@@ -3,6 +3,8 @@ package com.sparta.miniproject.controller;
 
 import com.sparta.miniproject.dto.PostRequestDto;
 import com.sparta.miniproject.dto.PostResponseDto;
+import com.sparta.miniproject.dto.ResponseDto;
+import com.sparta.miniproject.model.Post;
 import com.sparta.miniproject.service.CommentService;
 import com.sparta.miniproject.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -24,42 +26,40 @@ public class PostController {
 
     // 포스트 리스트 조회
     @GetMapping("/api/posts")
-    public List<PostResponseDto> getpostList() {
-        return postService.getPostList();
+    public ResponseEntity<ResponseDto> getPostList() {
+        return new ResponseEntity<>(
+                ResponseDto.success(postService.getPostList()), HttpStatus.valueOf(HttpStatus.OK.value()));
     }
 
     // 포스트 상세 조회
     @ResponseBody
     @GetMapping("/api/post/{postId}")
-    public HashMap getPost(@PathVariable Long postId) {
+    public ResponseEntity<ResponseDto> getPost(@PathVariable Long postId) {
         HashMap p = new HashMap();
         p.put("contents", postService.getPost(postId));
         p.put("comment", commentService.getComment(postId));
-        return p;
+        return new ResponseEntity<>(
+                ResponseDto.success(p), HttpStatus.valueOf(HttpStatus.OK.value()));
     }
 
     // 포스트 생성
     @PostMapping("/api/post")
-    public ResponseEntity<String> createPosts(PostRequestDto requestDto, MultipartFile imageFile) {
-
-        postService.createPost(requestDto, imageFile);
-        return new ResponseEntity<>("컨텐츠 등록에 성공했습니다", HttpStatus.OK);
+    public ResponseEntity<ResponseDto> createPost(PostRequestDto requestDto, MultipartFile imageFile) {
+        return new ResponseEntity<>(
+                ResponseDto.success(postService.createPost(requestDto, imageFile)), HttpStatus.valueOf(HttpStatus.OK.value()));
     }
 
     // 포스트 수정
     @PutMapping("/api/post/{postId}")
-    public ResponseEntity<String> updatePost(@PathVariable Long postId, PostRequestDto requestDto, MultipartFile imageFile) {
-            try {
-                postService.updatePost(postId, requestDto, imageFile);
-            } catch (NullPointerException | IllegalArgumentException e) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
-            }
-        return new ResponseEntity<>("컨텐츠 수정에 성공했습니다.", HttpStatus.OK);
+    public ResponseEntity<ResponseDto> updatePost(@PathVariable Long postId, PostRequestDto requestDto, MultipartFile imageFile) {
+        return new ResponseEntity<>(
+                ResponseDto.success(postService.updatePost(postId, requestDto, imageFile)), HttpStatus.valueOf(HttpStatus.OK.value()));
     }
 
     // 포스트 삭제
     @DeleteMapping("/api/post/{postId}")
-    public Long deletePost(@PathVariable Long postId) {
-        return postService.deletePost(postId);
+    public ResponseEntity<ResponseDto> deletePost(@PathVariable Long postId) {
+        return new ResponseEntity<>(
+                ResponseDto.success(postService.deletePost(postId)), HttpStatus.valueOf(HttpStatus.OK.value()));
     }
 }

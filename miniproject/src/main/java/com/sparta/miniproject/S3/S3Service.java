@@ -7,6 +7,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import com.sparta.miniproject.exception.BusinessException;
+import com.sparta.miniproject.exception.ErrorCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -44,18 +47,18 @@ public class S3Service {
                 .build();
     }
 
-    public String uploadImage(MultipartFile file) throws IllegalArgumentException, NullPointerException {
-        String fileName = UUID.randomUUID() + "-" + Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
-        try {
-            if (!(fileName.endsWith(".bmp") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png"))) {
-                throw new IllegalArgumentException("bmp,jpg,jpeg,png 형식의 이미지 파일이 필요합니다..");
+    public String uploadImage(MultipartFile imageFile) {
+            String fileName = UUID.randomUUID() + "-" + Objects.requireNonNull(imageFile.getOriginalFilename()).toLowerCase();
+            try {
+                if (!(fileName.endsWith(".bmp") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png"))) {
+                    throw new BusinessException(ErrorCode.INVALID_IMAGE_FILE_EXTENSION);
+                }
+                s3Client.putObject(new PutObjectRequest(bucket, fileName, imageFile.getInputStream(), null)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
+            } catch (IOException e) {
+                throw new BusinessException(ErrorCode.S3_UPLOAD_FAILED);
             }
-            s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (IOException e) {
-            throw new RuntimeException("S3 파일 업로드가 실패하였습니다.");
-        }
-        return s3Client.getUrl(bucket, fileName).toString();
+            return s3Client.getUrl(bucket, fileName).toString();
     }
 
     public List<DeleteObjectsRequest.KeyVersion> getImageKeys() {
@@ -66,10 +69,6 @@ public class S3Service {
             imageNameList.add(new DeleteObjectsRequest.KeyVersion(os.getKey()));
         }
         return imageNameList;
-    }
-
-    public void deleteObject(String sourceKey) {
-        s3Client.deleteObject(bucket, sourceKey);
     }
 
     public void deleteObjects(List<DeleteObjectsRequest.KeyVersion> object_keys) {

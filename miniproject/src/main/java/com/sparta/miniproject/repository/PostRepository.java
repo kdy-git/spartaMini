@@ -8,5 +8,6 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByOrderByCreatedAtDesc();
     <T> List<T> findAllBy(Class<T> type);
+    List<Post> findAllByAuthor(String username);
 
 }

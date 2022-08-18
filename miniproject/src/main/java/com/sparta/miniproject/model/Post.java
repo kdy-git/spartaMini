@@ -15,7 +15,8 @@ public class Post extends Timestamped {
     @Id
     private Long postId;
 
-    private String username;
+    @Column(nullable = false)
+    private String author;
 
     @Column(nullable = false)
     private String contents;
@@ -23,8 +24,8 @@ public class Post extends Timestamped {
     private String imgUrl;
 
     @Builder
-    public Post (String username, String contents, String imgUrl) {
-        this.username = username;
+    public Post (String author, String contents, String imgUrl) {
+        this.author = author;
         this.contents = contents;
         this.imgUrl = imgUrl;
     }

@@ -16,14 +16,18 @@ public class Comment extends Timestamped {
     @Id
     private Long commentId;
 
-    // @Column(nullable = false)
+    @Column(nullable = false)
     private Long postId;
 
-    // @Column(nullable = false)
+    @Column(nullable = false)
+    private String author;
+
+    @Column(nullable = false)
     private String commentContent;
 
     public Comment(Long postId, CommentRequestDto requestDto) {
         this.postId = postId;
+        this.author = requestDto.getAuthor();
         this.commentContent = requestDto.getCommentContent();
     }
 
