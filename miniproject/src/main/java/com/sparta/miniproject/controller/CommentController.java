@@ -16,7 +16,7 @@ public class CommentController {
     private final CommentService commentService;
 
     // 댓글 생성
-    @PostMapping("/api/post/{postId}/comment")
+    @PostMapping("/api/post/{postId}")
     public ResponseEntity<ResponseDto> createComment(@PathVariable Long postId, @RequestBody CommentRequestDto requestDto) {
         return new ResponseEntity<>(
                 ResponseDto.success(commentService.createComment(postId, requestDto)), HttpStatus.valueOf(HttpStatus.OK.value()));

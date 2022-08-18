@@ -66,14 +66,18 @@ public class PostService {
             try {
                 imagePath = s3Service.uploadImage(imageFile);
                 requestDto.setImgUrl(imagePath);
+                Post post = requestDto.createPost();
+                return postRepository.save(post);
             } catch (NullPointerException e) {
                 throw new NullPointerException("파일 변환에 실패했습니다");
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException(e.getMessage());
+            } catch (Exception e) {
+                Post post = requestDto.createPost();
+                return postRepository.save(post);
             }
         }
-        Post post = requestDto.createPost();
-        return postRepository.save(post);
+        return null;
     }
 
     //  포스트 수정
@@ -96,14 +100,15 @@ public class PostService {
         return post;
     }
 
-    // 포스트 삭제
-    public Long deletePost(Long postId) throws IllegalArgumentException {
-        Post post = postRepository.findById(postId)
+        // 포스트 삭제
+        public Long deletePost(Long postId) throws IllegalArgumentException {
+            Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         if(!getUser().equals(post.getAuthor())) {
             throw new BusinessException(ErrorCode.POST_UNAUTHORIZED);
         }
         postRepository.deleteById(postId);
+        commentRepository.deleteByPostId(postId);
         return postId;
     }
 }
